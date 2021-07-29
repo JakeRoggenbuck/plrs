@@ -3,6 +3,7 @@ use pyo3::wrap_pyfunction;
 
 use tokens::Tokens;
 
+pub mod lexer;
 pub mod tokenizer;
 pub mod tokens;
 
