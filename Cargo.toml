@@ -1,0 +1,15 @@
+[package]
+name = "plrs"
+version = "0.1.0"
+authors = ["jakeroggenbuck <jakeroggenbuck2@gmail.com>"]
+edition = "2018"
+
+[lib]
+name = "plrs"
+crate-type = ["cdylib"]
+
+[dependencies]
+
+[dependencies.pyo3]
+version = "0.13.2"
+features = ["extension-module"]

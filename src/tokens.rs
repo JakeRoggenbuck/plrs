@@ -1,0 +1,35 @@
+#[derive(PartialEq, Debug, Clone, Copy)]
+pub enum Tokens {
+    LeftBrace,
+    RightBrace,
+    LeftBracket,
+    RightBracket,
+    LeftParen,
+    RightParen,
+    Dot,
+    Comma,
+    Assignment,
+    Semicolon,
+    Colon,
+    Tag,
+    Reference,
+    Question,
+
+    Plus,
+    Minus,
+    Star,
+    Slash,
+    Carrot,
+    Greater,
+    Less,
+
+    Space,
+    Tab,
+    Newline,
+
+    Comment,
+    SingleQuote,
+    DoubleQuote,
+    Identifier,
+    NumericLiteral,
+}
