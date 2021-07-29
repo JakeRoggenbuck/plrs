@@ -270,6 +270,10 @@ struct Lexer {
 
 #[pymethods]
 impl Lexer {
+    /// The EOF code for python to access
+    #[classattr]
+    const EOF: i32 = Tokens::EOF as i32;
+
     #[new]
     fn new(chars: String) -> Self {
         let length = chars.clone().len();
