@@ -35,44 +35,48 @@ enum Tokens {
     DoubleQuote,
     Identifier,
     NumericLiteral,
+
+    EOF,
 }
 
 impl Tokens {
     fn from_i32(value: i32) -> Tokens {
         match value {
-            1 => Tokens::LeftBrace,
-            2 => Tokens::RightBrace,
-            3 => Tokens::LeftBracket,
-            4 => Tokens::RightBracket,
-            5 => Tokens::LeftParen,
-            6 => Tokens::RightParen,
-            7 => Tokens::Dot,
-            8 => Tokens::Comma,
-            9 => Tokens::Assignment,
-            10 => Tokens::Semicolon,
+            0 => Tokens::LeftBrace,
+            1 => Tokens::RightBrace,
+            2 => Tokens::LeftBracket,
+            3 => Tokens::RightBracket,
+            4 => Tokens::LeftParen,
+            5 => Tokens::RightParen,
+            6 => Tokens::Dot,
+            7 => Tokens::Comma,
+            8 => Tokens::Assignment,
+            9 => Tokens::Semicolon,
 
-            11 => Tokens::Colon,
-            12 => Tokens::Tag,
-            13 => Tokens::Reference,
-            14 => Tokens::Question,
+            10 => Tokens::Colon,
+            11 => Tokens::Tag,
+            12 => Tokens::Reference,
+            13 => Tokens::Question,
 
-            15 => Tokens::Plus,
-            16 => Tokens::Minus,
-            17 => Tokens::Star,
-            18 => Tokens::Slash,
-            19 => Tokens::Carrot,
-            20 => Tokens::Greater,
-            21 => Tokens::Less,
+            14 => Tokens::Plus,
+            15 => Tokens::Minus,
+            16 => Tokens::Star,
+            17 => Tokens::Slash,
+            18 => Tokens::Carrot,
+            19 => Tokens::Greater,
+            20 => Tokens::Less,
 
-            22 => Tokens::Space,
-            23 => Tokens::Tab,
-            24 => Tokens::Newline,
+            21 => Tokens::Space,
+            22 => Tokens::Tab,
+            23 => Tokens::Newline,
 
-            25 => Tokens::Comment,
-            26 => Tokens::SingleQuote,
-            27 => Tokens::DoubleQuote,
-            28 => Tokens::Identifier,
-            29 => Tokens::NumericLiteral,
+            24 => Tokens::Comment,
+            25 => Tokens::SingleQuote,
+            26 => Tokens::DoubleQuote,
+            27 => Tokens::Identifier,
+            28 => Tokens::NumericLiteral,
+
+            29 => Tokens::EOF,
             _ => panic!("Unknown value: {}", value),
         }
     }
@@ -93,11 +97,17 @@ struct Token {
 #[pyproto]
 impl PyObjectProtocol for Token {
     fn __str__(&self) -> PyResult<String> {
-        Ok(format!("Token(\"{}\", {:?})", self.part, self.token))
+        Ok(format!(
+            "Token(\"{}\", {:?}: {})",
+            self.part, self.token, self.token as i32
+        ))
     }
 
     fn __repr__(&self) -> PyResult<String> {
-        Ok(format!("Token(\"{}\", {:?})", self.part, self.token))
+        Ok(format!(
+            "Token(\"{}\", {:?}: {})",
+            self.part, self.token, self.token as i32
+        ))
     }
 }
 
@@ -242,7 +252,7 @@ fn tokenize(part: &str) -> Token {
 
     if token == Tokens::Identifier {
         if is_part_numeric(part) {
-            token = Tokens::Identifier;
+            token = Tokens::NumericLiteral;
         }
     }
 
@@ -272,14 +282,15 @@ impl Lexer {
         }
     }
 
-    #[staticmethod]
-    fn lexer() -> bool {
-        return true;
-    }
-
     fn next(&mut self) -> Option<Token> {
         let mut buffer = String::new();
         loop {
+            if self.eof {
+                return Some(Token {
+                    part: "".to_string(),
+                    token: Tokens::EOF,
+                });
+            }
             if self.index + 1 == self.length {
                 self.eof = true;
                 buffer.push(self.chars[self.index]);
