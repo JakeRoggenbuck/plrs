@@ -1,5 +1,5 @@
 use pyo3::prelude::*;
-use pyo3::wrap_pyfunction;
+use pyo3::{wrap_pyfunction, PyObjectProtocol};
 
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum Tokens {
@@ -78,11 +78,27 @@ impl Tokens {
     }
 }
 
+#[pyfunction]
+fn token_num_to_name(num: i32) -> String {
+    format!("{:?}", Tokens::from_i32(num))
+}
+
 #[pyclass]
 #[derive(PartialEq, Debug)]
 struct Token {
     part: String,
     token: Tokens,
+}
+
+#[pyproto]
+impl PyObjectProtocol for Token {
+    fn __str__(&self) -> PyResult<String> {
+        Ok(format!("Token(\"{}\", {:?})", self.part, self.token))
+    }
+
+    fn __repr__(&self) -> PyResult<String> {
+        Ok(format!("Token(\"{}\", {:?})", self.part, self.token))
+    }
 }
 
 #[pymethods]
@@ -235,18 +251,54 @@ fn tokenize(part: &str) -> Token {
 }
 
 #[pyclass]
-struct Lexer {}
+struct Lexer {
+    index: usize,
+    length: usize,
+    chars: Vec<char>,
+    eof: bool,
+}
 
 #[pymethods]
 impl Lexer {
     #[new]
-    fn new() -> Self {
-        Lexer {}
+    fn new(chars: String) -> Self {
+        let length = chars.clone().len();
+        let chars: Vec<char> = chars.chars().collect();
+        Lexer {
+            index: 0,
+            chars,
+            length,
+            eof: false,
+        }
     }
 
     #[staticmethod]
     fn lexer() -> bool {
         return true;
+    }
+
+    fn next(&mut self) -> Option<Token> {
+        let mut buffer = String::new();
+        loop {
+            if self.index + 1 == self.length {
+                self.eof = true;
+                buffer.push(self.chars[self.index]);
+                return Some(tokenize(&buffer));
+            }
+
+            let current: char = self.chars[self.index];
+            let next: char = self.chars[self.index + 1];
+
+            if !is_char_whitespace(current) {
+                buffer.push(current);
+                if ends_token(current, next) {
+                    self.index += 1;
+                    return Some(tokenize(&buffer));
+                }
+            }
+
+            self.index += 1;
+        }
     }
 }
 
@@ -260,6 +312,8 @@ fn plrs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_double_quote, m)?)?;
     m.add_function(wrap_pyfunction!(ends_token, m)?)?;
     m.add_function(wrap_pyfunction!(is_part_numeric, m)?)?;
+
+    m.add_function(wrap_pyfunction!(token_num_to_name, m)?)?;
 
     m.add_class::<Lexer>()?;
     m.add_class::<Token>()?;
