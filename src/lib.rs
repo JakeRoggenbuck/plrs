@@ -18,13 +18,7 @@ enum Tokens {
     Reference,
     Question,
 
-    Plus,
-    Minus,
-    Star,
-    Slash,
-    Carrot,
-    Greater,
-    Less,
+    Operator,
 
     Space,
     Tab,
@@ -57,14 +51,6 @@ impl Tokens {
             11 => Tokens::Tag,
             12 => Tokens::Reference,
             13 => Tokens::Question,
-
-            14 => Tokens::Plus,
-            15 => Tokens::Minus,
-            16 => Tokens::Star,
-            17 => Tokens::Slash,
-            18 => Tokens::Carrot,
-            19 => Tokens::Greater,
-            20 => Tokens::Less,
 
             21 => Tokens::Space,
             22 => Tokens::Tab,
@@ -232,13 +218,7 @@ fn tokenize(part: &str) -> Token {
         "&" => Tokens::Reference,
         "?" => Tokens::Question,
 
-        "+" => Tokens::Plus,
-        "-" => Tokens::Minus,
-        "*" => Tokens::Star,
-        "/" => Tokens::Slash,
-        "^" => Tokens::Carrot,
-        ">" => Tokens::Greater,
-        "<" => Tokens::Less,
+        "+" | "-" | "*" | "/" | "^" | ">" | "<" => Tokens::Operator,
 
         " " => Tokens::Space,
         "\t" => Tokens::Tab,
@@ -334,64 +314,4 @@ fn plrs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_class::<Token>()?;
 
     Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn is_char_symbol_test() {
-        for i in ['[', ']', ')', '(', '.', ';'].iter() {
-            assert!(is_char_symbol(*i));
-        }
-        for i in ['a', 'b', '7', '8'].iter() {
-            assert!(!is_char_symbol(*i));
-        }
-    }
-
-    #[test]
-    fn is_char_operator_test() {
-        for i in ['+', '-', '*', '^'].iter() {
-            assert!(is_char_operator(*i));
-        }
-
-        for i in ['a', '(', '7', ']'].iter() {
-            assert!(!is_char_operator(*i));
-        }
-    }
-
-    #[test]
-    fn is_char_whitespace_test() {
-        for i in [' ', '\t', '\n'].iter() {
-            assert!(is_char_whitespace(*i));
-        }
-
-        for i in ['a', '(', '7', ']'].iter() {
-            assert!(!is_char_whitespace(*i));
-        }
-    }
-
-    #[test]
-    fn is_char_numeric_test() {
-        for i in ['1', '3', '5', '9'].iter() {
-            assert!(is_char_numeric(*i));
-        }
-
-        for i in ['a', '(', ']', '+', 'n'].iter() {
-            assert!(!is_char_numeric(*i));
-        }
-    }
-
-    #[test]
-    fn is_double_quote_test() {
-        assert!(is_double_quote('\'') == false);
-        assert!(is_double_quote('\"') == true);
-    }
-
-    #[test]
-    fn is_single_quote_test() {
-        assert!(is_single_quote('\'') == true);
-        assert!(is_single_quote('\"') == false);
-    }
 }
