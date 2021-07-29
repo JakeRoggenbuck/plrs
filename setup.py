@@ -7,6 +7,6 @@ setup(
     rust_extensions=[
         RustExtension("plrs", binding=Binding.PyO3),
     ],
-    packages=["plrs"],
+    py_modules=["plrs"],
     zip_safe=False,
 )

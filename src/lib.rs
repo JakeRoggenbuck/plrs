@@ -37,11 +37,83 @@ enum Tokens {
     NumericLiteral,
 }
 
+impl Tokens {
+    fn from_i32(value: i32) -> Tokens {
+        match value {
+            1 => Tokens::LeftBrace,
+            2 => Tokens::RightBrace,
+            3 => Tokens::LeftBracket,
+            4 => Tokens::RightBracket,
+            5 => Tokens::LeftParen,
+            6 => Tokens::RightParen,
+            7 => Tokens::Dot,
+            8 => Tokens::Comma,
+            9 => Tokens::Assignment,
+            10 => Tokens::Semicolon,
+
+            11 => Tokens::Colon,
+            12 => Tokens::Tag,
+            13 => Tokens::Reference,
+            14 => Tokens::Question,
+
+            15 => Tokens::Plus,
+            16 => Tokens::Minus,
+            17 => Tokens::Star,
+            18 => Tokens::Slash,
+            19 => Tokens::Carrot,
+            20 => Tokens::Greater,
+            21 => Tokens::Less,
+
+            22 => Tokens::Space,
+            23 => Tokens::Tab,
+            24 => Tokens::Newline,
+
+            25 => Tokens::Comment,
+            26 => Tokens::SingleQuote,
+            27 => Tokens::DoubleQuote,
+            28 => Tokens::Identifier,
+            29 => Tokens::NumericLiteral,
+            _ => panic!("Unknown value: {}", value),
+        }
+    }
+}
+
 #[pyclass]
 #[derive(PartialEq, Debug)]
 struct Token {
     part: String,
     token: Tokens,
+}
+
+#[pymethods]
+impl Token {
+    #[new]
+    fn new(part: String, token: i32) -> Self {
+        Token {
+            part,
+            token: Tokens::from_i32(token),
+        }
+    }
+    #[getter]
+    fn part(&self) -> PyResult<String> {
+        Ok(self.part.clone())
+    }
+    #[getter]
+    fn token(&self) -> PyResult<i32> {
+        Ok(self.token as i32)
+    }
+
+    #[setter]
+    fn set_part(&mut self, value: String) -> PyResult<()> {
+        self.part = value;
+        Ok(())
+    }
+
+    #[setter]
+    fn set_token(&mut self, value: i32) -> PyResult<()> {
+        self.token = Tokens::from_i32(value);
+        Ok(())
+    }
 }
 
 #[pyfunction]
@@ -190,6 +262,7 @@ fn plrs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(is_part_numeric, m)?)?;
 
     m.add_class::<Lexer>()?;
+    m.add_class::<Token>()?;
 
     Ok(())
 }
