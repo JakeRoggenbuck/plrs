@@ -167,6 +167,11 @@ struct Lexer {}
 
 #[pymethods]
 impl Lexer {
+    #[new]
+    fn new() -> Self {
+        Lexer {}
+    }
+
     #[staticmethod]
     fn lexer() -> bool {
         return true;
