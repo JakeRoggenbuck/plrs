@@ -165,7 +165,13 @@ fn tokenize(part: &str) -> Token {
 #[pyclass]
 struct Lexer {}
 
-impl Lexer {}
+#[pymethods]
+impl Lexer {
+    #[staticmethod]
+    fn lexer() -> bool {
+        return true;
+    }
+}
 
 #[pymodule]
 fn plrs(_py: Python, m: &PyModule) -> PyResult<()> {
@@ -178,7 +184,7 @@ fn plrs(_py: Python, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(ends_token, m)?)?;
     m.add_function(wrap_pyfunction!(is_part_numeric, m)?)?;
 
-    m.add_function(wrap_pyfunction!(lexer, m)?)?;
+    m.add_class::<Lexer>()?;
 
     Ok(())
 }
