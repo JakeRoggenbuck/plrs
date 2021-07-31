@@ -3,66 +3,86 @@ use pyo3::{wrap_pyfunction, PyObjectProtocol};
 
 #[derive(PartialEq, Debug, Clone, Copy)]
 enum Tokens {
+    EOF,
+
+    Function,
+    Class,
+    Struct,
+    TypeName,
+    Operator,
+
     LeftBrace,
     RightBrace,
     LeftBracket,
     RightBracket,
     LeftParen,
     RightParen,
+
     Dot,
     Comma,
+
     Assignment,
     Semicolon,
     Colon,
     Tag,
     Reference,
     Question,
-
-    Operator,
+    At,
+    Percent,
+    Bang,
+    BackSlash,
 
     Space,
     Tab,
     Newline,
 
-    Comment,
     SingleQuote,
     DoubleQuote,
     Identifier,
     NumericLiteral,
-
-    EOF,
 }
 
 impl Tokens {
     fn from_i32(value: i32) -> Tokens {
         match value {
-            0 => Tokens::LeftBrace,
-            1 => Tokens::RightBrace,
-            2 => Tokens::LeftBracket,
-            3 => Tokens::RightBracket,
-            4 => Tokens::LeftParen,
-            5 => Tokens::RightParen,
-            6 => Tokens::Dot,
-            7 => Tokens::Comma,
-            8 => Tokens::Assignment,
-            9 => Tokens::Semicolon,
+            0 => Tokens::EOF,
 
-            10 => Tokens::Colon,
-            11 => Tokens::Tag,
-            12 => Tokens::Reference,
-            13 => Tokens::Question,
+            1 => Tokens::Function,
+            2 => Tokens::Class,
+            3 => Tokens::Struct,
+            4 => Tokens::TypeName,
+            5 => Tokens::Operator,
 
-            21 => Tokens::Space,
-            22 => Tokens::Tab,
-            23 => Tokens::Newline,
+            6 => Tokens::LeftBrace,
+            7 => Tokens::RightBrace,
+            8 => Tokens::LeftBracket,
+            9 => Tokens::RightBracket,
+            10 => Tokens::LeftParen,
+            11 => Tokens::RightParen,
 
-            24 => Tokens::Comment,
-            25 => Tokens::SingleQuote,
-            26 => Tokens::DoubleQuote,
-            27 => Tokens::Identifier,
-            28 => Tokens::NumericLiteral,
+            12 => Tokens::Dot,
+            13 => Tokens::Comma,
 
-            29 => Tokens::EOF,
+            14 => Tokens::Assignment,
+            15 => Tokens::Semicolon,
+            16 => Tokens::Colon,
+            17 => Tokens::Tag,
+            18 => Tokens::Reference,
+            19 => Tokens::Question,
+            20 => Tokens::At,
+            21 => Tokens::Percent,
+            22 => Tokens::Bang,
+            23 => Tokens::BackSlash,
+
+            24 => Tokens::Space,
+            25 => Tokens::Tab,
+            26 => Tokens::Newline,
+
+            27 => Tokens::SingleQuote,
+            28 => Tokens::DoubleQuote,
+            29 => Tokens::Identifier,
+            30 => Tokens::NumericLiteral,
+
             _ => panic!("Unknown value: {}", value),
         }
     }
@@ -203,28 +223,37 @@ fn is_part_numeric(part: &str) -> bool {
 #[pyfunction]
 fn tokenize(part: &str) -> Token {
     let mut token = match part {
+        "fn" | "fun" | "func" | "function" => Tokens::Function,
+        "class" | "cls" => Tokens::Class,
+        "struct" => Tokens::Struct,
+        "int" | "float" | "bool" | "double" | "long" | "str" | "string" => Tokens::TypeName,
+        "+" | "-" | "*" | "/" | "^" | ">" | "<" => Tokens::Operator,
+
         "{" => Tokens::LeftBrace,
         "}" => Tokens::RightBrace,
         "[" => Tokens::LeftBracket,
         "]" => Tokens::RightBracket,
         "(" => Tokens::LeftParen,
         ")" => Tokens::RightParen,
+
         "." => Tokens::Dot,
         "," => Tokens::Comma,
+
         "=" => Tokens::Assignment,
         ";" => Tokens::Semicolon,
         ":" => Tokens::Colon,
         "#" => Tokens::Tag,
         "&" => Tokens::Reference,
         "?" => Tokens::Question,
-
-        "+" | "-" | "*" | "/" | "^" | ">" | "<" => Tokens::Operator,
+        "@" => Tokens::At,
+        "%" => Tokens::Percent,
+        "!" => Tokens::Bang,
+        "\\" => Tokens::BackSlash,
 
         " " => Tokens::Space,
         "\t" => Tokens::Tab,
         "\n" => Tokens::Newline,
 
-        "~" => Tokens::Comment,
         "\'" => Tokens::SingleQuote,
         "\"" => Tokens::DoubleQuote,
         _ => Tokens::Identifier,
