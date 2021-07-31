@@ -32,6 +32,9 @@ enum Tokens {
     Bang,
     BackSlash,
 
+    Arrow,
+    Equal,
+
     Space,
     Tab,
     Newline,
@@ -41,6 +44,9 @@ enum Tokens {
     Identifier,
     NumericLiteral,
     StringLiteral,
+
+    LoopExit,
+    Return,
 }
 
 impl Tokens {
@@ -75,15 +81,21 @@ impl Tokens {
             22 => Tokens::Bang,
             23 => Tokens::BackSlash,
 
-            24 => Tokens::Space,
-            25 => Tokens::Tab,
-            26 => Tokens::Newline,
+            24 => Tokens::Arrow,
+            25 => Tokens::Equal,
 
-            27 => Tokens::SingleQuote,
-            28 => Tokens::DoubleQuote,
-            29 => Tokens::Identifier,
-            30 => Tokens::NumericLiteral,
-            31 => Tokens::StringLiteral,
+            26 => Tokens::Space,
+            27 => Tokens::Tab,
+            28 => Tokens::Newline,
+
+            29 => Tokens::SingleQuote,
+            30 => Tokens::DoubleQuote,
+            31 => Tokens::Identifier,
+            32 => Tokens::NumericLiteral,
+            33 => Tokens::StringLiteral,
+
+            34 => Tokens::LoopExit,
+            35 => Tokens::Return,
 
             _ => panic!("Unknown value: {}", value),
         }
@@ -234,8 +246,11 @@ fn tokenize(part: &str) -> Token {
         "fn" | "fun" | "func" | "function" => Tokens::Function,
         "class" | "cls" => Tokens::Class,
         "struct" => Tokens::Struct,
-        "int" | "float" | "bool" | "double" | "long" | "str" | "string" => Tokens::TypeName,
+        "int" | "float" | "bool" | "double" | "long" | "str" | "string" | "char" | "short"
+        | "void" => Tokens::TypeName,
         "+" | "-" | "*" | "/" | "^" | ">" | "<" => Tokens::Operator,
+        "continue" | "break" => Tokens::LoopExit,
+        "return" => Tokens::Return,
 
         "{" => Tokens::LeftBrace,
         "}" => Tokens::RightBrace,
@@ -257,6 +272,9 @@ fn tokenize(part: &str) -> Token {
         "%" => Tokens::Percent,
         "!" => Tokens::Bang,
         "\\" => Tokens::BackSlash,
+
+        "->" => Tokens::Arrow,
+        "==" => Tokens::Equal,
 
         " " => Tokens::Space,
         "\t" => Tokens::Tab,
