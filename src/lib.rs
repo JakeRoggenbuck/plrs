@@ -267,16 +267,23 @@ fn tokenize(part: &str) -> Token {
         _ => Tokens::Identifier,
     };
 
+    let mut part = String::from(part);
     if token == Tokens::Identifier {
-        if is_part_numeric(part) {
+        if is_part_numeric(&part) {
             token = Tokens::NumericLiteral;
         }
-        if part.starts_with("\"") {
+
+        if part.ends_with("\"") {
             token = Tokens::StringLiteral;
+            part.pop();
+        }
+
+        if part.ends_with("\'") {
+            token = Tokens::StringLiteral;
+            part.pop();
         }
     }
 
-    let part = String::from(part);
     return Token { part, token };
 }
 
@@ -315,7 +322,7 @@ impl Lexer {
         self.curr_char = self.chars[self.index];
     }
 
-    fn skip_over_char_set(&mut self, ch: char, surround: bool) -> String {
+    fn skip_over_char_set(&mut self, ch: char) -> String {
         let mut string: String = String::new();
         self.char_forward();
         while !(self.curr_char == ch) {
@@ -323,9 +330,8 @@ impl Lexer {
             self.char_forward();
         }
 
-        if surround {
-            string = String::from(ch) + &string + &ch.to_string();
-        }
+        // Add something at the end to identify it
+        string = string + &ch.to_string();
         self.char_forward();
         return string;
     }
@@ -352,7 +358,12 @@ impl Lexer {
             self.next_char = self.chars[self.index + 1];
 
             if self.curr_char == '"' {
-                let skipped_over = self.skip_over_char_set('"', true);
+                let skipped_over = self.skip_over_char_set('"');
+                return Some(tokenize(&skipped_over));
+            }
+
+            if self.curr_char == '\'' {
+                let skipped_over = self.skip_over_char_set('\'');
                 return Some(tokenize(&skipped_over));
             }
 
