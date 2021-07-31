@@ -103,9 +103,15 @@ struct Token {
 #[pyproto]
 impl PyObjectProtocol for Token {
     fn __str__(&self) -> PyResult<String> {
+        let part = match self.part.as_str() {
+            "\n" => "\\n",
+            "\t" => "\\t",
+            _ => &self.part,
+        };
+
         Ok(format!(
             "Token(\"{}\", {:?}: {})",
-            self.part, self.token, self.token as i32
+            part, self.token, self.token as i32
         ))
     }
 
