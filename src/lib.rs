@@ -40,6 +40,7 @@ enum Tokens {
     DoubleQuote,
     Identifier,
     NumericLiteral,
+    StringLiteral,
 }
 
 impl Tokens {
@@ -82,6 +83,7 @@ impl Tokens {
             28 => Tokens::DoubleQuote,
             29 => Tokens::Identifier,
             30 => Tokens::NumericLiteral,
+            31 => Tokens::StringLiteral,
 
             _ => panic!("Unknown value: {}", value),
         }
@@ -269,6 +271,9 @@ fn tokenize(part: &str) -> Token {
         if is_part_numeric(part) {
             token = Tokens::NumericLiteral;
         }
+        if part.starts_with("\"") {
+            token = Tokens::StringLiteral;
+        }
     }
 
     let part = String::from(part);
@@ -305,15 +310,23 @@ impl Lexer {
         }
     }
 
-    fn skip_over_char(&mut self, ch: char, surround: bool) -> String {
+    fn char_forward(&mut self) {
+        self.index += 1;
+        self.curr_char = self.chars[self.index];
+    }
+
+    fn skip_over_char_set(&mut self, ch: char, surround: bool) -> String {
         let mut string: String = String::new();
+        self.char_forward();
         while !(self.curr_char == ch) {
             string.push(self.curr_char);
+            self.char_forward();
         }
 
         if surround {
             string = String::from(ch) + &string + &ch.to_string();
         }
+        self.char_forward();
         return string;
     }
 
@@ -326,8 +339,10 @@ impl Lexer {
                     token: Tokens::EOF,
                 });
             }
+
             if self.index + 1 == self.length {
                 self.eof = true;
+
                 self.curr_char = self.chars[self.index];
                 buffer.push(self.curr_char);
                 return Some(tokenize(&buffer));
@@ -335,6 +350,11 @@ impl Lexer {
 
             self.curr_char = self.chars[self.index];
             self.next_char = self.chars[self.index + 1];
+
+            if self.curr_char == '"' {
+                let skipped_over = self.skip_over_char_set('"', true);
+                return Some(tokenize(&skipped_over));
+            }
 
             if !is_char_whitespace(self.curr_char) {
                 buffer.push(self.curr_char);
