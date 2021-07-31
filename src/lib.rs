@@ -280,6 +280,8 @@ struct Lexer {
     index: usize,
     length: usize,
     chars: Vec<char>,
+    curr_char: char,
+    next_char: char,
     eof: bool,
 }
 
@@ -298,7 +300,21 @@ impl Lexer {
             chars,
             length,
             eof: false,
+            curr_char: ' ',
+            next_char: ' ',
         }
+    }
+
+    fn skip_over_char(&mut self, ch: char, surround: bool) -> String {
+        let mut string: String = String::new();
+        while !(self.curr_char == ch) {
+            string.push(self.curr_char);
+        }
+
+        if surround {
+            string = String::from(ch) + &string + &ch.to_string();
+        }
+        return string;
     }
 
     fn next(&mut self) -> Option<Token> {
@@ -312,16 +328,17 @@ impl Lexer {
             }
             if self.index + 1 == self.length {
                 self.eof = true;
-                buffer.push(self.chars[self.index]);
+                self.curr_char = self.chars[self.index];
+                buffer.push(self.curr_char);
                 return Some(tokenize(&buffer));
             }
 
-            let current: char = self.chars[self.index];
-            let next: char = self.chars[self.index + 1];
+            self.curr_char = self.chars[self.index];
+            self.next_char = self.chars[self.index + 1];
 
-            if !is_char_whitespace(current) {
-                buffer.push(current);
-                if ends_token(current, next) {
+            if !is_char_whitespace(self.curr_char) {
+                buffer.push(self.curr_char);
+                if ends_token(self.curr_char, self.next_char) {
                     self.index += 1;
                     return Some(tokenize(&buffer));
                 }
