@@ -5,3 +5,8 @@ The multi-tool of lexical analysis and tokenization.
 ```
 pip install plrs
 ```
+
+# Build
+```
+maturin build
+```
