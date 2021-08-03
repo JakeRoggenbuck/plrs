@@ -331,9 +331,10 @@ impl Lexer {
     const EOF: i32 = Tokens::EOF as i32;
 
     #[new]
-    fn new(chars: String, settings: u32) -> Self {
-        let length = chars.clone().len();
-        let chars: Vec<char> = chars.chars().collect();
+    fn new(input: String, settings: u32) -> Self {
+        let chars: Vec<char> = input.chars().collect();
+        let length = chars.len();
+
         Lexer {
             index: 0,
             chars,
@@ -374,7 +375,7 @@ impl Lexer {
                 });
             }
 
-            if self.index + 1 == self.length {
+            if self.index + 1 >= self.length {
                 self.eof = true;
 
                 self.curr_char = self.chars[self.index];
@@ -404,7 +405,6 @@ impl Lexer {
                     return Some(tokenize(&buffer));
                 }
             }
-
             self.index += 1;
         }
     }
