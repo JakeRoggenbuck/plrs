@@ -2,13 +2,22 @@
 name = "plrs"
 version = "0.1.0"
 authors = ["jakeroggenbuck <jakeroggenbuck2@gmail.com>"]
+description = "The multi-tool of lexical analysis and tokenization."
+license = "MIT"
+repository = "https://github.com/JakeRoggenbuck/plrs"
 edition = "2018"
+readme = "README.md"
+keywords = ["pyo3", "lexer"]
+include = [
+    "Cargo.toml",
+    "pyproject.toml",
+    "README.md",
+    "src/*",
+]
 
 [lib]
 name = "plrs"
 crate-type = ["cdylib"]
-
-[dependencies]
 
 [dependencies.pyo3]
 version = "0.13.2"
