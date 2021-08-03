@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="plrs",
-    version="0.1.0",
+    version="0.1.1",
     author="Jake Roggenbuck",
     description="The multi-tool of lexical analysis and tokenization.",
     author_email="me@jr0.org",
@@ -16,6 +16,6 @@ setup(
     rust_extensions=[
         RustExtension("plrs", binding=Binding.PyO3),
     ],
-    py_modules=["plrs"],
+    packages=["plrs"],
     zip_safe=False,
 )
