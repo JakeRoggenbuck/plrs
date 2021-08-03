@@ -1,3 +1,4 @@
+use bitflags::bitflags;
 use pyo3::prelude::*;
 use pyo3::{wrap_pyfunction, PyObjectProtocol};
 
@@ -313,6 +314,14 @@ struct Lexer {
     curr_char: char,
     next_char: char,
     eof: bool,
+    settings: u32,
+}
+
+bitflags! {
+    struct Settings: u32 {
+        const PARSE_STRING = 0b00000001;
+        const ALL = Self::PARSE_STRING.bits;
+    }
 }
 
 #[pymethods]
@@ -322,7 +331,7 @@ impl Lexer {
     const EOF: i32 = Tokens::EOF as i32;
 
     #[new]
-    fn new(chars: String) -> Self {
+    fn new(chars: String, settings: u32) -> Self {
         let length = chars.clone().len();
         let chars: Vec<char> = chars.chars().collect();
         Lexer {
@@ -332,6 +341,7 @@ impl Lexer {
             eof: false,
             curr_char: ' ',
             next_char: ' ',
+            settings,
         }
     }
 
@@ -375,14 +385,16 @@ impl Lexer {
             self.curr_char = self.chars[self.index];
             self.next_char = self.chars[self.index + 1];
 
-            if self.curr_char == '"' {
-                let skipped_over = self.skip_over_char_set('"');
-                return Some(tokenize(&skipped_over));
-            }
+            if (self.settings & Settings::PARSE_STRING.bits) == Settings::PARSE_STRING.bits {
+                if self.curr_char == '"' {
+                    let skipped_over = self.skip_over_char_set('"');
+                    return Some(tokenize(&skipped_over));
+                }
 
-            if self.curr_char == '\'' {
-                let skipped_over = self.skip_over_char_set('\'');
-                return Some(tokenize(&skipped_over));
+                if self.curr_char == '\'' {
+                    let skipped_over = self.skip_over_char_set('\'');
+                    return Some(tokenize(&skipped_over));
+                }
             }
 
             if !is_char_whitespace(self.curr_char) {
