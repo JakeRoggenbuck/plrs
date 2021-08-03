@@ -19,6 +19,9 @@ include = [
 name = "plrs"
 crate-type = ["cdylib"]
 
+[dependencies]
+bitflags = "1.2.1"
+
 [dependencies.pyo3]
 version = "0.13.2"
 features = ["extension-module"]
