@@ -48,6 +48,8 @@ enum Tokens {
 
     LoopExit,
     Return,
+
+    Empty = 61599,
 }
 
 impl Tokens {
@@ -97,6 +99,7 @@ impl Tokens {
 
             34 => Tokens::LoopExit,
             35 => Tokens::Return,
+            61599 => Tokens::Empty,
 
             _ => panic!("Unknown value: {}", value),
         }
@@ -321,6 +324,7 @@ struct Lexer {
 
 bitflags! {
     struct Settings: u32 {
+        const NONE = 0b0;
         const PARSE_STRING = 0b00000001;
         const ALL = Self::PARSE_STRING.bits;
     }
