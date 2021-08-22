@@ -1,7 +1,17 @@
-from .plrs import *
+from .plrs import (
+    Token,
+    Lexer,
+    is_char_symbol,
+    is_char_operator,
+    is_char_whitespace,
+    is_char_numeric,
+    is_single_quote,
+    is_double_quote,
+    ends_token,
+    is_part_numeric,
+    token_num_to_name,
+)
 from enum import Enum
-
-EOF_TOKEN = Token("", Lexer.EOF)
 
 
 class Tokens(Enum):
@@ -50,10 +60,17 @@ class Tokens(Enum):
     LoopExit = 34
     Return = 35
 
+    Empty = 0xF09F
+
 
 class Settings:
+    NONE = 0
     PARSE_STRING = 1
     ALL = PARSE_STRING
+
+
+EOF_TOKEN = Token("", 0)
+EMPTY_TOKEN = Token("", 0xF09F)
 
 
 __version__ = "0.1.2"
