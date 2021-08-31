@@ -10,6 +10,8 @@ pip install plrs
 ```
 maturin build
 ```
+# Examples
+- [zipfs-law](https://github.com/JakeRoggenbuck/zipfs-law)
 
 # API
 #### Global variables
