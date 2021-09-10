@@ -73,6 +73,6 @@ EOF_TOKEN = Token("", 0)
 EMPTY_TOKEN = Token("", 0xF09F)
 
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __author__ = "jakeroggenbuck"
 __license__ = "MIT"
